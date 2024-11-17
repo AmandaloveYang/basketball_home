@@ -5,13 +5,13 @@ const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // url 基础地址
   timeout: 5000, // 请求超时时间
   // 添加跨域配置
-  withCredentials: true,
+  withCredentials: false,
 });
 
 // 请求拦截器
 service.interceptors.request.use(
   (config) => {
-    // 可以在这里添加一些通用的请求头
+    console.log("完整请求URL:", `${config.baseURL}${config.url}`);
     config.headers["Content-Type"] = "application/json";
     return config;
   },
