@@ -16,49 +16,60 @@
         </el-input>
 
         <el-button type="primary" class="ranking-btn" @click="goToRanking">
-          球队排名
+          <span class="btn-text">球队排名</span>
         </el-button>
       </div>
 
       <div v-if="searchTeam" class="search-results">
         <el-card class="search-result-card">
           <div v-if="searchResults.length > 0">
-            <div class="result-title">搜索结果：</div>
-            <div
-              v-for="(result, index) in searchResults"
-              :key="index"
-              class="result-item"
-            >
-              <div class="result-date">{{ result.date }}</div>
-              <div class="result-match">
-                <span :class="{ winner: result.isHomeWinner }">
-                  <img
-                    :src="result.homeLogo"
-                    class="team-logo"
-                    alt=""
-                    referrerpolicy="no-referrer"
-                    @error="handleImageError"
-                  />
-                  {{ result.homeTeam }}
-                </span>
-                <span class="score"
-                  >{{ result.homeScore }} - {{ result.awayScore }}</span
-                >
-                <span :class="{ winner: result.isAwayWinner }">
-                  <img
-                    :src="result.awayLogo"
-                    class="team-logo"
-                    alt=""
-                    referrerpolicy="no-referrer"
-                    @error="handleImageError"
-                  />
-                  {{ result.awayTeam }}
-                </span>
+            <div class="result-list">
+              <div
+                v-for="(result, index) in searchResults"
+                :key="index"
+                class="result-item"
+              >
+                <div class="result-date">{{ result.date }}</div>
+                <div class="match-info">
+                  <div class="team-info">
+                    <div
+                      class="team home"
+                      :class="{ winner: result.isHomeWinner }"
+                    >
+                      <img
+                        :src="result.homeLogo"
+                        class="team-logo"
+                        alt=""
+                        referrerpolicy="no-referrer"
+                        @error="handleImageError"
+                      />
+                      <span class="team-name">{{ result.homeTeam }}</span>
+                    </div>
+                    <div class="score-box">
+                      <span class="score"
+                        >{{ result.homeScore }} - {{ result.awayScore }}</span
+                      >
+                    </div>
+                    <div
+                      class="team away"
+                      :class="{ winner: result.isAwayWinner }"
+                    >
+                      <img
+                        :src="result.awayLogo"
+                        class="team-logo"
+                        alt=""
+                        referrerpolicy="no-referrer"
+                        @error="handleImageError"
+                      />
+                      <span class="team-name">{{ result.awayTeam }}</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
           <div v-else class="no-result">
-            <i class="el-icon-warning-outline" />
+            <i class="el-icon-warning-outline"></i>
             <span
               >未找到"{{ searchTeam }}"的比赛记录，请输入正确的球队名称</span
             >
@@ -615,66 +626,83 @@ export default {
 .search-results {
   margin: 0 50px 20px;
 
-  @media screen and (max-width: 768px) {
-    margin: 0 15px 20px; // 减小边距
-  }
-
   .search-result-card {
-    margin-bottom: 20px;
+    background: #fff;
+    border-radius: 8px;
   }
-  .result-title {
-    font-size: 16px;
-    font-weight: bold;
-    margin-bottom: 15px;
-  }
-  .result-item {
-    padding: 10px 0;
-    border-bottom: 1px solid #ebeef5;
-    &:last-child {
-      border-bottom: none;
-    }
-  }
-  .result-date {
-    color: #909399;
-    font-size: 14px;
-    margin-bottom: 5px;
-  }
-  .result-match {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    max-width: 500px;
 
-    .team-logo {
-      width: 20px;
-      height: 20px;
-      margin-right: 6px;
-      object-fit: contain;
-      vertical-align: middle;
-    }
+  .result-list {
+    .result-item {
+      padding: 16px;
+      border-bottom: 1px solid #f0f0f0;
 
-    .score {
-      color: #f56c6c;
-      font-weight: bold;
-      margin: 0 20px;
-    }
-    .winner {
-      color: #67c23a;
-    }
+      &:last-child {
+        border-bottom: none;
+      }
 
-    @media screen and (max-width: 768px) {
-      flex-direction: column; // 比赛结果垂直排列
-      align-items: center;
-      gap: 10px;
+      .result-date {
+        color: #909399;
+        font-size: 14px;
+        margin-bottom: 8px;
+      }
 
-      .score {
-        margin: 5px 0; // 调整分数间距
+      .match-info {
+        .team-info {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 20px;
+
+          .team {
+            display: flex;
+            align-items: center;
+            flex: 1;
+
+            &.home {
+              justify-content: flex-end;
+              text-align: right;
+            }
+
+            &.away {
+              justify-content: flex-start;
+              text-align: left;
+            }
+
+            &.winner {
+              color: #67c23a;
+              font-weight: 500;
+            }
+
+            .team-logo {
+              width: 24px;
+              height: 24px;
+              margin: 0 8px;
+              object-fit: contain;
+            }
+
+            .team-name {
+              font-size: 15px;
+            }
+          }
+
+          .score-box {
+            padding: 0 16px;
+            min-width: 80px;
+            text-align: center;
+
+            .score {
+              color: #f56c6c;
+              font-size: 16px;
+              font-weight: bold;
+            }
+          }
+        }
       }
     }
   }
 
   .no-result {
-    padding: 20px;
+    padding: 24px;
     text-align: center;
     color: #909399;
 
@@ -687,6 +715,37 @@ export default {
     span {
       font-size: 14px;
       vertical-align: middle;
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .search-results {
+    margin: 0 15px 20px;
+
+    .result-list {
+      .result-item {
+        .match-info {
+          .team-info {
+            gap: 10px;
+
+            .team {
+              .team-logo {
+                margin: 0 4px;
+              }
+
+              .team-name {
+                font-size: 14px;
+              }
+            }
+
+            .score-box {
+              padding: 0 8px;
+              min-width: 60px;
+            }
+          }
+        }
+      }
     }
   }
 }
@@ -768,6 +827,60 @@ export default {
 
   &:hover {
     background-color: #f5f7fa;
+  }
+}
+
+.ranking-btn {
+  background: rgba(255, 255, 255, 0.8) !important;
+  backdrop-filter: blur(10px);
+  border: none !important;
+  border-radius: 30px !important;
+  padding: 12px 40px !important;
+  font-size: 16px !important;
+  color: #333 !important;
+  letter-spacing: 2px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  .btn-text {
+    position: relative;
+    z-index: 1;
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+    border-radius: 30px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    color: #fff !important;
+
+    &::before {
+      opacity: 1;
+    }
+  }
+
+  &:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+}
+
+// 响应式调整
+@media screen and (max-width: 768px) {
+  .ranking-btn {
+    padding: 10px 30px !important;
+    font-size: 14px !important;
   }
 }
 </style>

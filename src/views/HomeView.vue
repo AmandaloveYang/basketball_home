@@ -1,30 +1,49 @@
 <template>
   <div class="magazine-wrapper">
-    <el-button class="start-btn fade-up" @click="goToGameView">
-      <span class="btn-text">开启</span>
-    </el-button>
-
     <div class="content-container">
       <div class="left-section">
         <div class="title-block fade-up">
           <div class="subtitle">Discover</div>
           <h1 class="main-title">Jordan Poole</h1>
           <div class="caption">Styled by Modern Sports</div>
+          <el-button class="start-btn fade-up" @click="goToGameView">
+            <span class="btn-text">开启</span>
+          </el-button>
         </div>
       </div>
 
       <div class="image-grid">
         <div class="grid-item item1 fade-up delay-1">
-          <img :src="require('@/assets/jp13-3.jpg')" alt="basketball" />
+          <el-image
+            :src="require('@/assets/jp13-3.jpg')"
+            :preview-src-list="[require('@/assets/jp13-3.jpg')]"
+            fit="cover"
+            hide-on-click-modal
+          />
         </div>
         <div class="grid-item item2 fade-up delay-2">
-          <img :src="require('@/assets/curry1.jpg')" alt="basketball" />
+          <el-image
+            :src="require('@/assets/curry1.jpg')"
+            :preview-src-list="[require('@/assets/curry1.jpg')]"
+            fit="cover"
+            hide-on-click-modal
+          />
         </div>
         <div class="grid-item item3 fade-up delay-3">
-          <img :src="require('@/assets/jp13-1.jpg')" alt="basketball" />
+          <el-image
+            :src="require('@/assets/jp13-1.jpg')"
+            :preview-src-list="[require('@/assets/jp13-1.jpg')]"
+            fit="cover"
+            hide-on-click-modal
+          />
         </div>
         <div class="grid-item item4 fade-up delay-4">
-          <img :src="require('@/assets/jp13-2.jpg')" alt="basketball" />
+          <el-image
+            :src="require('@/assets/jp13-2.jpg')"
+            :preview-src-list="[require('@/assets/jp13-2.jpg')]"
+            fit="cover"
+            hide-on-click-modal
+          />
         </div>
       </div>
     </div>
@@ -62,12 +81,7 @@ export default {
 }
 
 .start-btn {
-  position: fixed;
-  top: 2rem;
-  right: 2rem;
-  z-index: 100;
-
-  // 新的按钮样式
+  margin-top: 2rem;
   background: rgba(255, 255, 255, 0.8) !important;
   backdrop-filter: blur(10px);
   border: none !important;
@@ -161,14 +175,20 @@ export default {
     overflow: hidden;
     position: relative;
 
-    img {
+    :deep(.el-image) {
       width: 100%;
       height: 100%;
-      object-fit: cover;
-      transition: transform 0.3s ease;
 
-      &:hover {
-        transform: scale(1.05);
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+        cursor: pointer;
+
+        &:hover {
+          transform: scale(1.05);
+        }
       }
     }
   }
