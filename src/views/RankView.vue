@@ -53,23 +53,58 @@ export default {
       westData: [],
     };
   },
-  async created() {
-    try {
-      const res = await rankList();
-      if (res.error_code === 0) {
-        const ranking = res.result.ranking;
-        if (ranking && Array.isArray(ranking)) {
-          this.eastData = ranking[0].list || [];
-          this.westData = ranking[1].list || [];
+  methods: {
+    async fetchRankData() {
+      try {
+        const res = await rankList();
+        if (res.error_code === 0) {
+          const ranking = res.result.ranking;
+          if (ranking && Array.isArray(ranking)) {
+            this.eastData = ranking[0].list || [];
+            this.westData = ranking[1].list || [];
+
+            // 存储数据和时间戳到localStorage
+            const cacheData = {
+              eastData: this.eastData,
+              westData: this.westData,
+              timestamp: new Date().getTime(),
+            };
+            localStorage.setItem("nbaRankData", JSON.stringify(cacheData));
+          }
+        } else {
+          this.$message.error(res.reason || "获取排名数据失败");
         }
-      } else {
-        this.$message.error(res.reason || "获取排名数据失败");
+      } catch (error) {
+        console.error("获取排名数据失败:", error);
+        this.$message.error("获取排名数据失败");
+      } finally {
+        this.loading = false;
       }
-    } catch (error) {
-      console.error("获取排名数据失败:", error);
-      this.$message.error("获取排名数据失败");
-    } finally {
-      this.loading = false;
+    },
+
+    checkAndLoadData() {
+      const cachedData = localStorage.getItem("nbaRankData");
+      if (cachedData) {
+        const { eastData, westData, timestamp } = JSON.parse(cachedData);
+        const now = new Date().getTime();
+        const oneDay = 24 * 60 * 60 * 1000; // 一天的毫秒数
+
+        // 如果缓存数据不超过一天，直接使用缓存数据
+        if (now - timestamp < oneDay) {
+          this.eastData = eastData;
+          this.westData = westData;
+          this.loading = false;
+          return true;
+        }
+      }
+      return false;
+    },
+  },
+
+  async created() {
+    // 检查缓存数据，如果没有有效缓存才请求新数据
+    if (!this.checkAndLoadData()) {
+      await this.fetchRankData();
     }
   },
 };

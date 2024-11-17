@@ -273,7 +273,7 @@ export default {
     },
   },
   async created() {
-    this.Option = {}; // 初始化echarts的Option
+    this.Option = {}; // 初��化echarts的Option
     try {
       const res = JSON.parse(JSON.stringify(await hupuScheduleList()));
       this.gameList = res.result.gameList;
@@ -303,8 +303,11 @@ export default {
     }
   },
   mounted() {
-    this.fetchMatchData();
-    this.startPolling();
+    this.$nextTick(() => {
+      this.fetchMatchData();
+      this.startPolling();
+      this.updateChartData(); // 初始化图表
+    });
   },
   // eslint-disable-next-line vue/no-deprecated-destroyed-lifecycle
   beforeDestroy() {
@@ -380,6 +383,13 @@ export default {
 
     // 更新图表数据
     updateChartData() {
+      // 确保 DOM 元素存在
+      const chartDom = document.getElementById("main");
+      if (!chartDom) {
+        console.warn("Chart container not found");
+        return;
+      }
+
       if (this.form.time) {
         const { matchList } = this.gameList.find(
           (game) => game.dayBlock === this.form.time,
@@ -456,12 +466,22 @@ export default {
           },
         };
 
-        const myChart = echarts.init(document.getElementById("main"));
-        myChart.setOption(newOption);
+        // 使用 this.$nextTick 确保 DOM 已更新
+        this.$nextTick(() => {
+          let myChart = echarts.getInstanceByDom(chartDom);
+          if (!myChart) {
+            myChart = echarts.init(chartDom);
+          }
+          myChart.setOption(newOption, true);
 
-        window.addEventListener("resize", () => {
-          myChart.resize();
-          this.updateChartData();
+          // 添加 resize 监听
+          const resizeHandler = () => {
+            myChart.resize();
+            this.updateChartData();
+          };
+
+          window.removeEventListener("resize", resizeHandler);
+          window.addEventListener("resize", resizeHandler);
         });
       }
     },
