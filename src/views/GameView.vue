@@ -566,55 +566,59 @@ export default {
   flex-wrap: wrap;
   gap: 30px;
   margin-left: 50px;
+
+  @media screen and (max-width: 768px) {
+    margin-left: 0; // 移动端移除左边距
+    gap: 15px; // 减小间距
+  }
 }
 
 .game-item {
   flex: 0 0 calc(20% - 24px);
   min-width: 250px;
-}
 
-// 响应式布局
-@media screen and (max-width: 1600px) {
-  .game-item {
-    flex: 0 0 calc(25% - 24px);
-  }
-}
-
-@media screen and (max-width: 1200px) {
-  .game-item {
-    flex: 0 0 calc(33.33% - 24px);
-  }
-}
-
-@media screen and (max-width: 900px) {
-  .game-item {
-    flex: 0 0 calc(50% - 24px);
-  }
-}
-
-@media screen and (max-width: 600px) {
-  .game-item {
-    flex: 0 0 100%;
+  @media screen and (max-width: 768px) {
+    min-width: auto; // 移除最小宽度限制
+    flex: 0 0 100%; // 移动端单列显示
   }
 }
 
 .search-container {
   margin: 0 50px 20px;
   display: flex;
+  gap: 10px;
   align-items: center;
-  gap: 20px;
 
   .search-input {
-    max-width: 400px;
+    flex: 1;
   }
 
   .ranking-btn {
-    height: 40px;
+    flex-shrink: 0;
+  }
+
+  @media screen and (max-width: 768px) {
+    margin: 0 15px 20px;
+    flex-direction: column;
+    width: 100%;
+
+    .search-input {
+      width: 100%;
+    }
+
+    .ranking-btn {
+      width: 100%;
+    }
   }
 }
 
 .search-results {
   margin: 0 50px 20px;
+
+  @media screen and (max-width: 768px) {
+    margin: 0 15px 20px; // 减小边距
+  }
+
   .search-result-card {
     margin-bottom: 20px;
   }
@@ -656,6 +660,16 @@ export default {
     }
     .winner {
       color: #67c23a;
+    }
+
+    @media screen and (max-width: 768px) {
+      flex-direction: column; // 比赛结果垂直排列
+      align-items: center;
+      gap: 10px;
+
+      .score {
+        margin: 5px 0; // 调整分数间距
+      }
     }
   }
 
