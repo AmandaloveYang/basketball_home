@@ -81,15 +81,27 @@ export default {
   background-color: #f0f2f5;
   min-height: 100vh;
 
+  @media screen and (max-width: 768px) {
+    padding: 10px;
+  }
+
   .dashboard-container {
     max-width: 1800px;
     margin: 0 auto;
     margin-top: 20px;
 
+    @media screen and (max-width: 768px) {
+      margin: 0;
+    }
+
     .content-wrapper {
       display: flex;
       gap: 30px;
       align-items: flex-start;
+
+      @media screen and (max-width: 768px) {
+        gap: 15px;
+      }
 
       .side-image {
         flex: 0 0 350px;
@@ -120,16 +132,30 @@ export default {
         flex: 1;
         min-width: 800px;
 
+        @media screen and (max-width: 768px) {
+          min-width: 100%;
+        }
+
         .rank-wrapper {
           padding: 20px;
           background: #fff;
           border-radius: 8px;
           box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 
+          @media screen and (max-width: 768px) {
+            padding: 10px;
+            border-radius: 4px;
+          }
+
           .tables-container {
             display: flex;
             gap: 30px;
             flex-wrap: nowrap;
+
+            @media screen and (max-width: 768px) {
+              flex-direction: column;
+              gap: 15px;
+            }
 
             :deep(.rank-card) {
               flex: 1;
@@ -137,6 +163,14 @@ export default {
               box-shadow: none;
               border: 1px solid #ebeef5;
               border-radius: 4px;
+
+              @media screen and (max-width: 768px) {
+                margin-bottom: 10px;
+
+                &:last-child {
+                  margin-bottom: 0;
+                }
+              }
             }
           }
         }

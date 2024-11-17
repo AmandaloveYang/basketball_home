@@ -505,6 +505,13 @@ export default {
     min-height: 100vh;
     background-color: #f5f7fa;
     padding: 20px;
+
+    @media screen and (max-width: 768px) {
+      margin: 0; // 移除外边距
+      padding: 10px; // 减小内边距
+      width: 100%; // 确保宽度100%
+      min-height: calc(100vh - 20px); // 调整最小高度,减去padding值
+    }
   }
   &-text {
     font-size: 30px;
@@ -612,8 +619,9 @@ export default {
   margin-left: 50px;
 
   @media screen and (max-width: 768px) {
-    margin-left: 0; // 移动端移除左边距
-    gap: 15px; // 减小间距
+    margin: 0; // 移除所有外边距
+    gap: 15px;
+    padding: 0 15px; // 添加内边距来替代外边距
   }
 }
 
@@ -622,8 +630,8 @@ export default {
   min-width: 250px;
 
   @media screen and (max-width: 768px) {
-    min-width: auto; // 移除最小宽度限制
-    flex: 0 0 100%; // 移动端单列显示
+    min-width: 100%; // 修改为100%宽度
+    flex: 0 0 100%;
   }
 }
 
@@ -644,7 +652,8 @@ export default {
   @media screen and (max-width: 768px) {
     margin: 0 15px 20px;
     flex-direction: column;
-    width: 100%;
+    width: auto; // 移除固定宽度
+    padding: 0; // 移除内边距
 
     .search-input {
       width: 100%;
@@ -749,6 +758,11 @@ export default {
       font-size: 14px;
       vertical-align: middle;
     }
+  }
+
+  @media screen and (max-width: 768px) {
+    margin: 0 15px 20px;
+    width: auto; // 移除固定宽度
   }
 }
 
