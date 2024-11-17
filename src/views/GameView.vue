@@ -311,7 +311,7 @@ export default {
     this.stopPolling(); // 组件销毁前清除定时器
   },
   methods: {
-    // 初始化和更新图表
+    // 初化和更新图表
     initChart(option) {
       const myChart = echarts.init(document.getElementById("main"));
       myChart.setOption(option);
@@ -392,23 +392,45 @@ export default {
         matchList.forEach((match) => {
           homeScores.push(match.homeScore);
           awayScores.push(match.awayScore);
-          teams.push(`${match.homeTeamName} vs ${match.awayTeamName}`);
+          teams.push(`${match.awayTeamName} vs ${match.homeTeamName}`);
         });
 
+        const isMobile = window.innerWidth <= 768;
+
         const newOption = {
-          xAxis: {
-            data: teams,
+          grid: {
+            left: isMobile ? "1%" : "3%",
+            right: isMobile ? "10%" : "3%",
+            top: "3%",
+            bottom: "3%",
+            containLabel: true,
           },
-          yAxis: {},
+          xAxis: {
+            type: isMobile ? "value" : "category",
+            data: isMobile ? null : teams,
+            axisLabel: {
+              interval: 0,
+              rotate: isMobile ? 0 : 30,
+            },
+          },
+          yAxis: {
+            type: isMobile ? "category" : "value",
+            data: isMobile ? teams : null,
+            inverse: isMobile,
+            axisLabel: {
+              width: 120,
+              overflow: "truncate",
+            },
+          },
           series: [
             {
               type: "bar",
-              data: homeScores,
+              data: awayScores,
               barGap: "20%",
               barCategoryGap: "40%",
               label: {
                 show: true,
-                position: "top",
+                position: isMobile ? "right" : "top",
                 textStyle: {
                   color: "#666",
                 },
@@ -416,10 +438,10 @@ export default {
             },
             {
               type: "bar",
-              data: awayScores,
+              data: homeScores,
               label: {
                 show: true,
-                position: "top",
+                position: isMobile ? "right" : "top",
                 textStyle: {
                   color: "#666",
                 },
@@ -436,6 +458,11 @@ export default {
 
         const myChart = echarts.init(document.getElementById("main"));
         myChart.setOption(newOption);
+
+        window.addEventListener("resize", () => {
+          myChart.resize();
+          this.updateChartData();
+        });
       }
     },
 
@@ -517,9 +544,15 @@ export default {
 #main {
   height: 400px;
   background-color: #ffffff;
-  padding: 20px;
+  padding: 10px;
   border-radius: 8px;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
+
+  @media screen and (max-width: 768px) {
+    width: 100%;
+    padding: 5px;
+    margin: 0 auto;
+  }
 }
 
 .row-margin {

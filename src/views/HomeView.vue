@@ -3,7 +3,6 @@
     <div class="content-container">
       <div class="left-section">
         <div class="title-block fade-up">
-          <div class="subtitle">Discover</div>
           <h1 class="main-title">Jordan Poole</h1>
           <div class="caption">Styled by Modern Sports</div>
           <el-button class="start-btn fade-up" @click="goToGameView">
