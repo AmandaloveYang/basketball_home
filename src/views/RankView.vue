@@ -51,10 +51,31 @@ export default {
       loading: true,
       eastData: [],
       westData: [],
+      requestTimer: null,
+      requestHour: 14, // 设置每天请求的时间点为下午2点
     };
   },
   methods: {
+    // 检查是否需要发送请求
+    shouldFetchData() {
+      const now = new Date();
+      const currentHour = now.getHours();
+      return currentHour === this.requestHour;
+    },
+
+    // 设置定时器
+    setupRequestTimer() {
+      // 每小时检查一次
+      this.requestTimer = setInterval(() => {
+        if (this.shouldFetchData()) {
+          this.fetchRankData();
+        }
+      }, 3600000); // 3600000ms = 1小时
+    },
+
     async fetchRankData() {
+      this.loading = true;
+
       try {
         const res = await rankList();
         if (res.resultcode === "112") {
@@ -90,7 +111,21 @@ export default {
   },
 
   created() {
-    this.fetchRankData();
+    console.log("组件创建，开始获取数据");
+    this.fetchRankData().then(() => {
+      console.log("数据获取完成", {
+        eastData: this.eastData,
+        westData: this.westData,
+      });
+    });
+    this.setupRequestTimer();
+  },
+
+  beforeDestroy() {
+    // 组件销毁前清除定时器
+    if (this.requestTimer) {
+      clearInterval(this.requestTimer);
+    }
   },
 };
 </script>
