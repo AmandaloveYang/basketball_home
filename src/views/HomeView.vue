@@ -55,6 +55,7 @@ export default {
   data() {
     return {
       backgroundImage: require("@/assets/p.png"),
+      dialogVisible: false,
     };
   },
   methods: {

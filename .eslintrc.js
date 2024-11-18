@@ -7,7 +7,7 @@ module.exports = {
   },
   extends: [
     "eslint:recommended", // ESLint 推荐规则
-    "plugin:vue/vue3-essential", // Vue 推荐规则
+    "plugin:vue/essential", // Vue 推荐规则
     "plugin:prettier/recommended", // Prettier 推荐规则
   ],
   parserOptions: {

@@ -15,6 +15,21 @@
           </template>
         </el-input>
 
+        <el-input
+          v-model="qqNumber"
+          placeholder="请输入QQ号码"
+          class="qq-input"
+          clearable
+          @clear="clearQQResult"
+        >
+          <template #append>
+            <el-button
+              icon="el-icon-search"
+              @click="handleQQSearch"
+            ></el-button>
+          </template>
+        </el-input>
+
         <el-button type="primary" class="ranking-btn" @click="goToRanking">
           <span class="btn-text">球队排名</span>
         </el-button>
@@ -76,6 +91,39 @@
           </div>
         </el-card>
       </div>
+      <el-dialog
+        :visible.sync="dialogVisible"
+        title="QQ信息查询结果"
+        width="400px"
+        center
+      >
+        <div v-loading="qqLoading" class="qq-dialog-content">
+          <div v-if="qqResult" class="qq-info">
+            <div class="info-item">
+              <span class="label">QQ号码：</span>
+              <span class="value">{{ qqResult.qq }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">手机号：</span>
+              <span class="value">{{ qqResult.phone }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">归属地：</span>
+              <span class="value">{{ qqResult.phonediqu }}</span>
+            </div>
+          </div>
+          <div v-else-if="!qqLoading" class="no-result">
+            <i class="el-icon-warning-outline"></i>
+            <span>未查询到相关信息</span>
+          </div>
+        </div>
+        <template #footer>
+          <span class="dialog-footer">
+            <el-button @click="dialogVisible = false">关闭</el-button>
+          </span>
+        </template>
+      </el-dialog>
+
       <!-- 比赛卡片 -->
       <div class="game-container">
         <el-col v-for="item in gameList" :key="item.dayBlock" class="game-item">
@@ -161,14 +209,14 @@
           />
         </el-select>
         <div id="main" />
-        <!-- 这是用来展示echarts图表的容器 -->
+        <!-- 这是用来展示echarts表的容器 -->
       </el-main>
     </div>
   </div>
 </template>
 
 <script>
-import { hupuScheduleList } from "@/api/basketball.js";
+import { hupuScheduleList, qqSearch } from "@/api/basketball.js";
 import * as echarts from "echarts";
 export default {
   name: "GameView",
@@ -195,6 +243,10 @@ export default {
       statsLoading: false,
       currentMatch: null,
       matchStats: null,
+      qqNumber: "", // QQ号码
+      qqResult: null, // QQ查询果
+      dialogVisible: false, // 控制弹窗显示
+      qqLoading: false, // 控制QQ查询的加载状态
     };
   },
   computed: {
@@ -273,7 +325,7 @@ export default {
     },
   },
   async created() {
-    this.Option = {}; // 初��化echarts的Option
+    this.Option = {}; // 初化echarts的Option
     try {
       const res = JSON.parse(JSON.stringify(await hupuScheduleList()));
       this.gameList = res.result.gameList;
@@ -311,7 +363,7 @@ export default {
   },
   // eslint-disable-next-line vue/no-deprecated-destroyed-lifecycle
   beforeDestroy() {
-    this.stopPolling(); // 组件销毁前清除定时器
+    this.stopPolling(); // 组件销毁前除定时器
   },
   methods: {
     // 初化和更新图表
@@ -510,9 +562,43 @@ export default {
       }
     },
 
-    // 添加跳转方法
+    // 添加跳转方
     goToRanking() {
       this.$router.push("/rank");
+    },
+
+    // 添加QQ查询方法
+
+    clearQQResult() {
+      this.qqNumber = "";
+      this.qqResult = null;
+      this.dialogVisible = false;
+    },
+
+    async handleQQSearch() {
+      if (!this.qqNumber) {
+        this.$message.warning("请输入QQ号码");
+        return;
+      }
+
+      this.qqLoading = true;
+      this.dialogVisible = true;
+
+      try {
+        const res = await qqSearch(this.qqNumber);
+        if (res.status === 200) {
+          this.qqResult = res;
+        } else {
+          this.$message.error(res.message || "查询失败");
+          this.qqResult = null;
+        }
+      } catch (error) {
+        console.error("QQ查询失败:", error);
+        this.$message.error("查询失败，请稍后重试");
+        this.qqResult = null;
+      } finally {
+        this.qqLoading = false;
+      }
     },
   },
 };
@@ -626,7 +712,7 @@ export default {
       color: #f56c6c;
       font-weight: bold;
       margin-left: auto; // 将分数推到右边
-      min-width: 30px; // 保持分数宽度一致
+      min-width: 30px; // 保持分数宽一致
       text-align: right;
     }
   }
@@ -658,29 +744,42 @@ export default {
 .search-container {
   margin: 0 50px 20px;
   display: flex;
-  gap: 10px;
+  gap: 15px;
   align-items: center;
-
-  .search-input {
-    flex: 1;
-  }
-
-  .ranking-btn {
-    flex-shrink: 0;
-  }
+  flex-wrap: wrap; // 允许元素换行
 
   @media screen and (max-width: 768px) {
     margin: 0 15px 20px;
-    flex-direction: column;
-    width: auto; // 移除固定宽度
-    padding: 0; // 移除内边距
+    gap: 10px;
 
-    .search-input {
-      width: 100%;
+    .search-input,
+    .qq-input {
+      flex: 1 1 100%; // 在移动端占满整行
+      max-width: 100%;
     }
 
     .ranking-btn {
-      width: 100%;
+      width: 100%; // 按钮占满整行
+      margin-top: 5px;
+    }
+  }
+
+  .search-input,
+  .qq-input {
+    flex: 1;
+    max-width: 400px;
+
+    :deep(.el-input__inner) {
+      @media screen and (max-width: 768px) {
+        height: 38px; // 稍微降低输入框高度
+        font-size: 13px;
+      }
+    }
+
+    :deep(.el-input-group__append) {
+      @media screen and (max-width: 768px) {
+        padding: 0 12px;
+      }
     }
   }
 }
@@ -948,6 +1047,176 @@ export default {
   .ranking-btn {
     padding: 10px 30px !important;
     font-size: 14px !important;
+  }
+}
+
+.qq-dialog-content {
+  padding: 20px;
+
+  .qq-info {
+    .info-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+      padding: 12px;
+      background: #f5f7fa;
+      border-radius: 4px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      .label {
+        width: 70px;
+        color: #606266;
+      }
+
+      .value {
+        color: #303133;
+      }
+    }
+  }
+}
+
+/deep/ .el-dialog {
+  border-radius: 8px;
+
+  .el-dialog__header {
+    padding: 20px;
+    border-bottom: 1px solid #ebeef5;
+  }
+
+  .el-dialog__body {
+    padding: 20px;
+  }
+
+  .el-dialog__footer {
+    padding: 15px 20px;
+    border-top: 1px solid #ebeef5;
+    text-align: right;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  :deep(.el-dialog) {
+    width: 90% !important;
+    margin: 0 auto;
+  }
+
+  .qq-dialog-content {
+    padding: 15px;
+
+    .qq-info {
+      .info-item {
+        padding: 8px 12px;
+        margin-bottom: 10px;
+
+        .label {
+          flex: 0 0 60px;
+          font-size: 14px;
+        }
+
+        .value {
+          font-size: 14px;
+        }
+      }
+    }
+  }
+}
+
+// 优化对话框在移动端的显示
+.qq-dialog-content {
+  @media screen and (max-width: 768px) {
+    padding: 12px;
+
+    .qq-info {
+      .info-item {
+        padding: 10px;
+        margin-bottom: 8px;
+
+        .label {
+          width: 60px;
+          font-size: 13px;
+        }
+
+        .value {
+          font-size: 13px;
+        }
+      }
+    }
+  }
+}
+
+// 优化游戏列表容器
+.game-list-container {
+  @media screen and (max-width: 768px) {
+    .dashboard-container {
+      padding: 10px 0; // 减少容器内边距
+    }
+  }
+}
+
+// 优化游戏卡片
+.game-container {
+  @media screen and (max-width: 768px) {
+    margin: 0 10px; // 减少左右边距
+    gap: 10px; // 减少卡片间距
+
+    .game-item {
+      .box-card {
+        margin-bottom: 10px;
+
+        :deep(.el-card__header) {
+          padding: 10px;
+        }
+
+        :deep(.el-card__body) {
+          padding: 10px;
+        }
+      }
+    }
+  }
+}
+
+// 优化搜索结果展示
+.search-results {
+  @media screen and (max-width: 768px) {
+    margin: 0 10px 15px;
+
+    .result-item {
+      padding: 12px !important;
+
+      .team-info {
+        .team {
+          .team-name {
+            font-size: 13px !important;
+          }
+
+          .team-logo {
+            width: 20px !important;
+            height: 20px !important;
+          }
+        }
+
+        .score-box {
+          min-width: 50px !important;
+
+          .score {
+            font-size: 14px !important;
+          }
+        }
+      }
+    }
+  }
+}
+
+// 优化按钮样式
+.ranking-btn {
+  @media screen and (max-width: 768px) {
+    height: 38px !important; // 统一按钮高度
+    padding: 0 20px !important;
+    font-size: 13px !important;
+    letter-spacing: 1px;
   }
 }
 </style>

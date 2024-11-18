@@ -5,22 +5,27 @@
     </div>
     <el-table
       v-loading="loading"
-      :data="tableData"
+      :data="formattedData"
       border
       stripe
       style="width: 100%"
       :header-cell-style="headerStyle"
     >
       <el-table-column type="index" label="排名" width="60" align="center" />
-      <el-table-column label="球队" prop="team" min-width="160" />
+      <el-table-column label="球队" prop="team" min-width="160">
+        <template #default="{ row }">
+          <div class="team-cell">
+            <span>{{ row.team }}</span>
+          </div>
+        </template>
+      </el-table-column>
       <el-table-column label="胜" prop="wins" width="60" align="center" />
       <el-table-column label="负" prop="losses" width="60" align="center" />
-      <el-table-column
-        label="胜率"
-        prop="wins_rate"
-        width="80"
-        align="center"
-      />
+      <el-table-column label="胜率" prop="wins_rate" width="80" align="center">
+        <template #default="{ row }">
+          {{ formatWinRate(row.wins_rate) }}
+        </template>
+      </el-table-column>
     </el-table>
   </div>
 </template>
@@ -40,6 +45,21 @@ export default {
     loading: {
       type: Boolean,
       default: false,
+    },
+  },
+  computed: {
+    formattedData() {
+      return this.tableData.map((item) => ({
+        ...item,
+        wins: Number(item.wins),
+        losses: Number(item.losses),
+        wins_rate: Number(item.wins_rate),
+      }));
+    },
+  },
+  methods: {
+    formatWinRate(rate) {
+      return rate ? `${(rate * 100).toFixed(1)}%` : "0.0%";
     },
   },
   data() {
@@ -72,6 +92,12 @@ export default {
       font-weight: bold;
       color: #303133;
     }
+  }
+
+  .team-cell {
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
   }
 
   :deep(.el-table) {

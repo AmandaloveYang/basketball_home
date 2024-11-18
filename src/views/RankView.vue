@@ -57,55 +57,40 @@ export default {
     async fetchRankData() {
       try {
         const res = await rankList();
-        if (res.error_code === 0) {
-          const ranking = res.result.ranking;
-          if (ranking && Array.isArray(ranking)) {
-            this.eastData = ranking[0].list || [];
-            this.westData = ranking[1].list || [];
+        if (res.resultcode === "112") {
+          throw new Error(res.reason || "超过API调用限制");
+        }
 
-            // 存储数据和时间戳到localStorage
-            const cacheData = {
-              eastData: this.eastData,
-              westData: this.westData,
-              timestamp: new Date().getTime(),
-            };
-            localStorage.setItem("nbaRankData", JSON.stringify(cacheData));
-          }
-        } else {
-          this.$message.error(res.reason || "获取排名数据失败");
+        if (res?.result?.ranking) {
+          const [eastRanking, westRanking] = res.result.ranking;
+
+          this.eastData = eastRanking.list.map((team) => ({
+            team: team.team,
+            wins: team.wins,
+            losses: team.losses,
+            wins_rate: parseFloat(team.wins_rate) / 100,
+          }));
+
+          this.westData = westRanking.list.map((team) => ({
+            team: team.team,
+            wins: team.wins,
+            losses: team.losses,
+            wins_rate: parseFloat(team.wins_rate) / 100,
+          }));
         }
       } catch (error) {
         console.error("获取排名数据失败:", error);
-        this.$message.error("获取排名数据失败");
+        this.$message.error(
+          error.message || "获取排名数据失败，请检查网络连接",
+        );
       } finally {
         this.loading = false;
       }
     },
-
-    checkAndLoadData() {
-      const cachedData = localStorage.getItem("nbaRankData");
-      if (cachedData) {
-        const { eastData, westData, timestamp } = JSON.parse(cachedData);
-        const now = new Date().getTime();
-        const oneDay = 24 * 60 * 60 * 1000; // 一天的毫秒数
-
-        // 如果缓存数据不超过一天，直接使用缓存数据
-        if (now - timestamp < oneDay) {
-          this.eastData = eastData;
-          this.westData = westData;
-          this.loading = false;
-          return true;
-        }
-      }
-      return false;
-    },
   },
 
-  async created() {
-    // 检查缓存数据，如果没有有效缓存才请求新数据
-    if (!this.checkAndLoadData()) {
-      await this.fetchRankData();
-    }
+  created() {
+    this.fetchRankData();
   },
 };
 </script>
@@ -116,27 +101,15 @@ export default {
   background-color: #f0f2f5;
   min-height: 100vh;
 
-  @media screen and (max-width: 768px) {
-    padding: 10px;
-  }
-
   .dashboard-container {
     max-width: 1800px;
     margin: 0 auto;
     margin-top: 20px;
 
-    @media screen and (max-width: 768px) {
-      margin: 0;
-    }
-
     .content-wrapper {
       display: flex;
       gap: 30px;
       align-items: flex-start;
-
-      @media screen and (max-width: 768px) {
-        gap: 15px;
-      }
 
       .side-image {
         flex: 0 0 350px;
@@ -167,30 +140,15 @@ export default {
         flex: 1;
         min-width: 800px;
 
-        @media screen and (max-width: 768px) {
-          min-width: 100%;
-        }
-
         .rank-wrapper {
           padding: 20px;
           background: #fff;
           border-radius: 8px;
           box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 
-          @media screen and (max-width: 768px) {
-            padding: 10px;
-            border-radius: 4px;
-          }
-
           .tables-container {
             display: flex;
             gap: 30px;
-            flex-wrap: nowrap;
-
-            @media screen and (max-width: 768px) {
-              flex-direction: column;
-              gap: 15px;
-            }
 
             :deep(.rank-card) {
               flex: 1;
@@ -198,8 +156,36 @@ export default {
               box-shadow: none;
               border: 1px solid #ebeef5;
               border-radius: 4px;
+            }
+          }
+        }
+      }
+    }
+  }
+}
 
-              @media screen and (max-width: 768px) {
+@media screen and (max-width: 768px) {
+  .rank-container {
+    padding: 10px;
+
+    .dashboard-container {
+      margin: 0;
+
+      .content-wrapper {
+        gap: 15px;
+
+        .rank-cards {
+          min-width: 100%;
+
+          .rank-wrapper {
+            padding: 10px;
+            border-radius: 4px;
+
+            .tables-container {
+              flex-direction: column;
+              gap: 15px;
+
+              :deep(.rank-card) {
                 margin-bottom: 10px;
 
                 &:last-child {
