@@ -142,11 +142,12 @@ export default {
 
 <style lang="less" scoped>
 .chat-page {
-  height: 100vh;
-  width: 100vw;
+  min-height: 100vh;
+  width: 100%;
   background-color: #f5f7fa;
   padding: 20px;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 .page-container {
@@ -155,6 +156,8 @@ export default {
   max-width: 1200px;
   margin: 0 auto;
   height: 100%;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 .chat-container {
@@ -300,23 +303,42 @@ export default {
 @media screen and (max-width: 768px) {
   .chat-page {
     padding: 10px;
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  .page-container {
+    gap: 10px;
   }
 
   .chat-container {
     height: calc(100vh - 20px);
+    width: 100%;
+
+    .chat-messages {
+      height: 0;
+    }
 
     .message-wrapper {
       &.user {
         .message {
-          margin-left: 10%;
+          margin-left: 5%;
         }
       }
 
       &.assistant {
         .message {
-          margin-right: 10%;
+          margin-right: 5%;
         }
       }
+    }
+  }
+
+  .input-area {
+    padding: 10px;
+
+    .el-textarea {
+      margin-bottom: 8px;
     }
   }
 }

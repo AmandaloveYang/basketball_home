@@ -96,6 +96,8 @@
         title="QQ信息查询结果"
         width="400px"
         center
+        :close-on-click-modal="false"
+        :close-on-press-escape="false"
       >
         <div v-loading="qqLoading" class="qq-dialog-content">
           <div v-if="qqResult" class="qq-info">
@@ -119,7 +121,7 @@
         </div>
         <template #footer>
           <span class="dialog-footer">
-            <el-button @click="dialogVisible = false">关闭</el-button>
+            <el-button @click="clearQQResult">关闭</el-button>
           </span>
         </template>
       </el-dialog>
@@ -244,7 +246,7 @@ export default {
       currentMatch: null,
       matchStats: null,
       qqNumber: '', // QQ号码
-      qqResult: null, // QQ查询果
+      qqResult: null, // QQ查询结果
       dialogVisible: false, // 控制弹窗显示
       qqLoading: false, // 控制QQ查询的加载状态
     };
@@ -339,7 +341,7 @@ export default {
         });
       });
       this.time = this.gameList.map((item) => item.dayBlock);
-      // 直接设置默认值为"今天"
+      // 接设置默认值为"今天"
       const defaultValue = this.time.find((date) => date.includes('今天'));
       this.form.time = defaultValue || this.time[0];
 
@@ -581,15 +583,35 @@ export default {
         return;
       }
 
+      if (!/^\d{5,11}$/.test(this.qqNumber)) {
+        this.$message.warning('请输入正确的QQ号码');
+        return;
+      }
+
       this.qqLoading = true;
       this.dialogVisible = true;
 
       try {
-        const res = await qqSearch(this.qqNumber);
-        if (res.status === 200) {
-          this.qqResult = res;
+        const response = await qqSearch(this.qqNumber);
+
+        if (response && response.status === 200) {
+          // 直接从 response.data 中获取数据
+          this.qqResult = {
+            qq: this.qqNumber,
+            phone: response.data.phone || '未查询到',
+            phonediqu: response.data.phonediqu || '未查询到',
+          };
+
+          // 如果没有查到任何信息
+          if (!response.data.phone && !response.data.phonediqu) {
+            this.qqResult = {
+              qq: this.qqNumber,
+              phone: '未查询到',
+              phonediqu: '未查询到',
+            };
+          }
         } else {
-          this.$message.error(res.message || '查询失败');
+          this.$message.error(response?.message || '查询失败，请稍后重试');
           this.qqResult = null;
         }
       } catch (error) {
@@ -1051,7 +1073,8 @@ export default {
 }
 
 .qq-dialog-content {
-  padding: 20px;
+  min-height: 150px;
+  position: relative;
 
   .qq-info {
     .info-item {
@@ -1061,6 +1084,11 @@ export default {
       padding: 12px;
       background: #f5f7fa;
       border-radius: 4px;
+      transition: background-color 0.3s;
+
+      &:hover {
+        background: #eef1f6;
+      }
 
       &:last-child {
         margin-bottom: 0;
@@ -1069,11 +1097,31 @@ export default {
       .label {
         width: 70px;
         color: #606266;
+        font-weight: 500;
       }
 
       .value {
         color: #303133;
+        flex: 1;
+        word-break: break-all;
       }
+    }
+  }
+
+  .no-result {
+    text-align: center;
+    color: #909399;
+    padding: 30px 0;
+
+    i {
+      font-size: 24px;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+
+    span {
+      font-size: 14px;
+      vertical-align: middle;
     }
   }
 }
