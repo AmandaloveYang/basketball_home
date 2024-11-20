@@ -51,17 +51,17 @@
 
 <script>
 export default {
-  name: "HomeView",
+  name: 'HomeView',
   data() {
     return {
-      backgroundImage: require("@/assets/p.png"),
+      backgroundImage: require('@/assets/p.png'),
       dialogVisible: false,
     };
   },
   methods: {
     goToGameView() {
-      if (this.$route.path !== "/game") {
-        this.$router.push("/game");
+      if (this.$route.path !== '/game') {
+        this.$router.push('/game');
       }
     },
   },
@@ -99,7 +99,7 @@ export default {
   }
 
   &::before {
-    content: "";
+    content: '';
     position: absolute;
     top: 0;
     left: 0;

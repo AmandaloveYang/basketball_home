@@ -1,30 +1,30 @@
-import Vue from "vue";
-import VueRouter from "vue-router";
-import HomeView from "@/views/HomeView.vue";
-import GameView from "@/views/GameView.vue";
-import RankView from "@/views/RankView.vue";
+import Vue from 'vue';
+import VueRouter from 'vue-router';
+import HomeView from '@/views/HomeView.vue';
+import GameView from '@/views/GameView.vue';
+import ChatView from '@/views/ChatView.vue';
 Vue.use(VueRouter);
 
 const routes = [
   {
-    path: "/",
-    name: "GameView",
+    path: '/',
+    name: 'HomeView',
     component: HomeView,
   },
   {
-    path: "/game",
-    name: "GameView",
+    path: '/game',
+    name: 'GameView',
     component: GameView,
   },
   {
-    path: "/rank",
-    name: "RankView",
-    component: RankView,
+    path: '/chat',
+    name: 'ChatView',
+    component: ChatView,
   },
 ];
 
 const router = new VueRouter({
-  mode: "history",
+  mode: 'history',
   base: process.env.BASE_URL,
   routes,
 });

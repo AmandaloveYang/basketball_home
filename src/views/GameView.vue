@@ -31,7 +31,7 @@
         </el-input>
 
         <el-button type="primary" class="ranking-btn" @click="goToRanking">
-          <span class="btn-text">球队排名</span>
+          <span class="btn-text">ChatGPT</span>
         </el-button>
       </div>
 
@@ -216,34 +216,34 @@
 </template>
 
 <script>
-import { hupuScheduleList, qqSearch } from "@/api/basketball.js";
-import * as echarts from "echarts";
+import { hupuScheduleList, qqSearch } from '@/api/basketball.js';
+import * as echarts from 'echarts';
 export default {
-  name: "GameView",
+  name: 'GameView',
   data() {
     return {
       gameList: [], // 每周的赛程
       matchList: [], // 每天比赛的信息
       loading: true,
       form: {
-        time: "", // 选择的时间
+        time: '', // 选择的时间
       },
-      time: "",
+      time: '',
       Option: {}, // echarts的Option
-      searchTeam: "", // 搜索关键词
+      searchTeam: '', // 搜索关键词
       searchResults: [], // 搜索结果
       logo: {
-        homeTeamLogo: "",
-        awayTeamLogo: "",
+        homeTeamLogo: '',
+        awayTeamLogo: '',
       },
-      defaultLogoUrl: "https://example.com/default-logo.png", // 设置一个默认的logo图片URL
+      defaultLogoUrl: 'https://example.com/default-logo.png', // 设置一个默认的logo图片URL
       pollingTimer: null,
       pollingInterval: 10000, // 10秒轮询一次
       statsDialogVisible: false,
       statsLoading: false,
       currentMatch: null,
       matchStats: null,
-      qqNumber: "", // QQ号码
+      qqNumber: '', // QQ号码
       qqResult: null, // QQ查询果
       dialogVisible: false, // 控制弹窗显示
       qqLoading: false, // 控制QQ查询的加载状态
@@ -255,7 +255,7 @@ export default {
     },
   },
   watch: {
-    "form.time"(val) {
+    'form.time'(val) {
       const dayBlock = this.gameList.map((item) => item.dayBlock); // 每天的时间
       const teams = this.matchList.map((item) =>
         item.map((item) => `${item.homeTeamName} vs ${item.awayTeamName}`),
@@ -273,26 +273,26 @@ export default {
         });
         const optionSeries = [
           {
-            type: "bar",
+            type: 'bar',
             data: homeScores,
-            barGap: "20%",
-            barCategoryGap: "40%",
+            barGap: '20%',
+            barCategoryGap: '40%',
             label: {
               show: true,
-              position: "top",
+              position: 'top',
               textStyle: {
-                color: "#666",
+                color: '#666',
               },
             },
           },
           {
-            type: "bar",
+            type: 'bar',
             data: awayScores,
             label: {
               show: true,
-              position: "top",
+              position: 'top',
               textStyle: {
-                color: "#666",
+                color: '#666',
               },
             },
           },
@@ -304,23 +304,23 @@ export default {
           yAxis: {},
           series: optionSeries,
           tooltip: {
-            trigger: "axis",
+            trigger: 'axis',
             axisPointer: {
-              type: "shadow",
+              type: 'shadow',
             },
           },
         };
       }
-      var myChart = echarts.init(document.getElementById("main"));
+      var myChart = echarts.init(document.getElementById('main'));
       myChart.setOption(this.Option);
-      window.addEventListener("resize", function () {
+      window.addEventListener('resize', function () {
         myChart.resize(); // 监听窗口大小变化，自动调整图表大小
       });
     },
-    "match.homeScore"() {
+    'match.homeScore'() {
       this.updateChartData();
     },
-    "match.awayScore"() {
+    'match.awayScore'() {
       this.updateChartData();
     },
   },
@@ -340,14 +340,14 @@ export default {
       });
       this.time = this.gameList.map((item) => item.dayBlock);
       // 直接设置默认值为"今天"
-      const defaultValue = this.time.find((date) => date.includes("今天"));
+      const defaultValue = this.time.find((date) => date.includes('今天'));
       this.form.time = defaultValue || this.time[0];
 
       // 确保在数据加载完成后立即触发 watch
       this.$nextTick(() => {
         if (this.form.time) {
           // 手动触发一次 watch
-          this.$watch("form.time", this.$options.watch["form.time"]);
+          this.$watch('form.time', this.$options.watch['form.time']);
         }
       });
     } catch (error) {
@@ -368,9 +368,9 @@ export default {
   methods: {
     // 初化和更新图表
     initChart(option) {
-      const myChart = echarts.init(document.getElementById("main"));
+      const myChart = echarts.init(document.getElementById('main'));
       myChart.setOption(option);
-      window.addEventListener("resize", () => {
+      window.addEventListener('resize', () => {
         myChart.resize();
       });
     },
@@ -404,12 +404,12 @@ export default {
       this.searchResults = results;
     },
     formatMatchTime(timeStr) {
-      if (!timeStr) return "";
-      const time = timeStr.split(" ")[1].substring(0, 5);
+      if (!timeStr) return '';
+      const time = timeStr.split(' ')[1].substring(0, 5);
       return time;
     },
     handleClear() {
-      this.searchTeam = "";
+      this.searchTeam = '';
       this.searchResults = [];
     },
     // 添加图片加载错误处理方法
@@ -429,16 +429,16 @@ export default {
           this.updateChartData();
         }
       } catch (error) {
-        console.error("获取比赛数据失败:", error);
+        console.error('获取比赛数据失败:', error);
       }
     },
 
     // 更新图表数据
     updateChartData() {
       // 确保 DOM 元素存在
-      const chartDom = document.getElementById("main");
+      const chartDom = document.getElementById('main');
       if (!chartDom) {
-        console.warn("Chart container not found");
+        console.warn('Chart container not found');
         return;
       }
 
@@ -461,14 +461,14 @@ export default {
 
         const newOption = {
           grid: {
-            left: isMobile ? "1%" : "3%",
-            right: isMobile ? "10%" : "3%",
-            top: "3%",
-            bottom: "3%",
+            left: isMobile ? '1%' : '3%',
+            right: isMobile ? '10%' : '3%',
+            top: '3%',
+            bottom: '3%',
             containLabel: true,
           },
           xAxis: {
-            type: isMobile ? "value" : "category",
+            type: isMobile ? 'value' : 'category',
             data: isMobile ? null : teams,
             axisLabel: {
               interval: 0,
@@ -476,44 +476,44 @@ export default {
             },
           },
           yAxis: {
-            type: isMobile ? "category" : "value",
+            type: isMobile ? 'category' : 'value',
             data: isMobile ? teams : null,
             inverse: isMobile,
             axisLabel: {
               width: 120,
-              overflow: "truncate",
+              overflow: 'truncate',
             },
           },
           series: [
             {
-              type: "bar",
+              type: 'bar',
               data: awayScores,
-              barGap: "20%",
-              barCategoryGap: "40%",
+              barGap: '20%',
+              barCategoryGap: '40%',
               label: {
                 show: true,
-                position: isMobile ? "right" : "top",
+                position: isMobile ? 'right' : 'top',
                 textStyle: {
-                  color: "#666",
+                  color: '#666',
                 },
               },
             },
             {
-              type: "bar",
+              type: 'bar',
               data: homeScores,
               label: {
                 show: true,
-                position: isMobile ? "right" : "top",
+                position: isMobile ? 'right' : 'top',
                 textStyle: {
-                  color: "#666",
+                  color: '#666',
                 },
               },
             },
           ],
           tooltip: {
-            trigger: "axis",
+            trigger: 'axis',
             axisPointer: {
-              type: "shadow",
+              type: 'shadow',
             },
           },
         };
@@ -532,8 +532,8 @@ export default {
             this.updateChartData();
           };
 
-          window.removeEventListener("resize", resizeHandler);
-          window.addEventListener("resize", resizeHandler);
+          window.removeEventListener('resize', resizeHandler);
+          window.addEventListener('resize', resizeHandler);
         });
       }
     },
@@ -543,7 +543,7 @@ export default {
       this.pollingTimer = setInterval(() => {
         // 检查是否有正在进行的比赛
         const hasOngoingMatch = this.gameList.some((game) =>
-          game.matchList.some((match) => match.matchStatusChinese === "进行中"),
+          game.matchList.some((match) => match.matchStatusChinese === '进行中'),
         );
 
         if (hasOngoingMatch) {
@@ -564,20 +564,20 @@ export default {
 
     // 添加跳转方
     goToRanking() {
-      this.$router.push("/rank");
+      this.$router.push('/chat');
     },
 
     // 添加QQ查询方法
 
     clearQQResult() {
-      this.qqNumber = "";
+      this.qqNumber = '';
       this.qqResult = null;
       this.dialogVisible = false;
     },
 
     async handleQQSearch() {
       if (!this.qqNumber) {
-        this.$message.warning("请输入QQ号码");
+        this.$message.warning('请输入QQ号码');
         return;
       }
 
@@ -589,12 +589,12 @@ export default {
         if (res.status === 200) {
           this.qqResult = res;
         } else {
-          this.$message.error(res.message || "查询失败");
+          this.$message.error(res.message || '查询失败');
           this.qqResult = null;
         }
       } catch (error) {
-        console.error("QQ查询失败:", error);
-        this.$message.error("查询失败，请稍后重试");
+        console.error('QQ查询失败:', error);
+        this.$message.error('查询失败，请稍后重试');
         this.qqResult = null;
       } finally {
         this.qqLoading = false;
@@ -1014,7 +1014,7 @@ export default {
   }
 
   &::before {
-    content: "";
+    content: '';
     position: absolute;
     top: 0;
     left: 0;

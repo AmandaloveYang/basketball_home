@@ -32,7 +32,7 @@
 
 <script>
 export default {
-  name: "RankTable",
+  name: 'RankTable',
   props: {
     title: {
       type: String,
@@ -59,16 +59,16 @@ export default {
   },
   methods: {
     formatWinRate(rate) {
-      return rate ? `${(rate * 100).toFixed(1)}%` : "0.0%";
+      return rate ? `${(rate * 100).toFixed(1)}%` : '0.0%';
     },
   },
   data() {
     return {
       headerStyle: {
-        background: "#f5f7fa",
-        color: "#606266",
-        fontWeight: "bold",
-        textAlign: "center",
+        background: '#f5f7fa',
+        color: '#606266',
+        fontWeight: 'bold',
+        textAlign: 'center',
       },
     };
   },

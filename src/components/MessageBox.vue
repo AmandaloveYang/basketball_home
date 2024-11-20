@@ -20,12 +20,12 @@
 
 <script>
 export default {
-  name: "MessageBox",
+  name: 'MessageBox',
   data() {
     return {
       dialog: false,
-      title: "",
-      message: "",
+      title: '',
+      message: '',
       resolve: null,
       reject: null,
     };
